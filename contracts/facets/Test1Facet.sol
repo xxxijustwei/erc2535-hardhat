@@ -46,5 +46,7 @@ contract Test1Facet {
 
     function test1Func20() external {}
 
-    function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
+    function supportsInterface(
+        bytes4 _interfaceID
+    ) external view returns (bool) {}
 }

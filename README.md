@@ -1,4 +1,4 @@
-# Diamond Hardhat(viem) Implementation
+# Diamond Hardhat-v3(viem) Implementation
 
 This is an implementation for [EIP-2535 Diamond Standard](https://github.com/ethereum/EIPs/issues/2535). To learn about other implementations go here: https://github.com/mudgen/diamond
 
@@ -10,19 +10,19 @@ The standard loupe functions have been gas-optimized in this implementation and 
 
 1. Clone this repo:
 ```console
-git clone git@github.com:xxxijustwei/erc2535-contract.git
+git clone git@github.com:xxxijustwei/erc2535-hardhat.git
 ```
 
 2. Install NPM packages:
 ```console
-cd erc2535-contract
-yarn
+cd erc2535-hardhat
+bun install
 ```
 
 ## Deployment
 
 ```console
-npx hardhat run scripts/deploy.js
+bunx hardhat run scripts/deploy.js
 ```
 
 ### How the scripts/deploy.js script works

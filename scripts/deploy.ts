@@ -1,9 +1,8 @@
-import { network } from "hardhat";
 import { FacetCutAction, getSelectors } from "./utils/diamond.js";
 import { encodeFunctionData } from "viem";
+import { NetworkConnection, NetworkManager } from "hardhat/types/network";
 
-export const depolyDiamond = async () => {
-  const { viem } = await network.connect();
+export const depolyDiamond = async (viem: NetworkConnection<"generic">["viem"]) => {
   const publicClient = await viem.getPublicClient();
   const [deployWallet] = await viem.getWalletClients();
 

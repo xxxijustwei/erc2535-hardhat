@@ -42,7 +42,7 @@ describe("Cache bug test", async () => {
     const publicClient = await viem.getPublicClient();
     const [walletClient] = await viem.getWalletClients();
 
-    const diamond = await depolyDiamond();
+    const diamond = await depolyDiamond(viem);
     const dCutFacet = await viem.getContractAt("DiamondCutFacet", diamond);
     dLoupeFacet = await viem.getContractAt("DiamondLoupeFacet", diamond);
 

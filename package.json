@@ -1,5 +1,5 @@
 {
-  "name": "erc2535-contract",
+  "name": "erc2535-diamond-hardhat",
   "version": "1.0.0",
   "description": "EIP-2535 Diamond Standard Implementation",
   "author": [
