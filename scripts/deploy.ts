@@ -1,21 +1,22 @@
-import hre from "hardhat";
-import { FacetCutAction, getSelectors } from "./utils/diamond";
+import { network } from "hardhat";
+import { FacetCutAction, getSelectors } from "./utils/diamond.js";
 import { encodeFunctionData } from "viem";
 
 export const depolyDiamond = async () => {
-    const publicClient = await hre.viem.getPublicClient();
-    const [deployWallet] = await hre.viem.getWalletClients();
+    const { viem } = await network.connect();
+    const publicClient = await viem.getPublicClient();
+    const [deployWallet] = await viem.getWalletClients();
 
     // deploy DiamondCutFacet
-    const diamondCutFacet = await hre.viem.deployContract("DiamondCutFacet");
+    const diamondCutFacet = await viem.deployContract("DiamondCutFacet");
 
     // deploy Diamond
-    const diamond = await hre.viem.deployContract("Diamond", [
+    const diamond = await viem.deployContract("Diamond", [
         deployWallet.account.address,
         diamondCutFacet.address
     ]);
 
-    const diamondInit = await hre.viem.deployContract("DiamondInit");
+    const diamondInit = await viem.deployContract("DiamondInit");
 
     const facetNames = [
         'DiamondLoupeFacet',
@@ -24,7 +25,7 @@ export const depolyDiamond = async () => {
     const cut = [];
 
     for (const facetName of facetNames) {
-        const facet = await hre.viem.deployContract(facetName);
+        const facet = await viem.deployContract(facetName);
         cut.push({
             facetAddress: facet.address,
             action: FacetCutAction.Add,
@@ -32,10 +33,11 @@ export const depolyDiamond = async () => {
         });
     }
 
-    const diamondCut = await hre.viem.getContractAt("IDiamondCut", diamond.address);
+    const diamondCut = await viem.getContractAt("IDiamondCut", diamond.address);
     const initFunc = encodeFunctionData({
         abi: diamondInit.abi,
-        functionName: "init"
+        functionName: "init",
+        args: []
     });
 
     const { request } = await publicClient.simulateContract({

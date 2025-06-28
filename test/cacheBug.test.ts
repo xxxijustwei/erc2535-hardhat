@@ -1,10 +1,13 @@
-import hre from "hardhat";
-import { depolyDiamond } from "../scripts/deploy"
-import { FacetCutAction } from "../scripts/utils/diamond";
+import { network } from "hardhat";
 import { Abi, GetContractReturnType, zeroAddress, zeroHash } from "viem";
-import { assert } from "chai";
+import assert from "node:assert/strict";
+import { before, describe, it } from "node:test";
+import { depolyDiamond } from "../scripts/deploy.js";
+import { FacetCutAction } from "../scripts/utils/diamond.js";
 
 describe('Cache bug test', async () => {
+    const { viem } = await network.connect();
+    
     let dLoupeFacet: GetContractReturnType<Abi>;
     let test1Facet: GetContractReturnType<Abi>;
     const ownerSel = '0x8da5cb5b'
@@ -36,14 +39,14 @@ describe('Cache bug test', async () => {
             sel10
         ];
 
-        const publicClient = await hre.viem.getPublicClient();
-        const [walletClient] = await hre.viem.getWalletClients();
+        const publicClient = await viem.getPublicClient();
+        const [walletClient] = await viem.getWalletClients();
 
         const diamond = await depolyDiamond();
-        const dCutFacet = await hre.viem.getContractAt("DiamondCutFacet", diamond);
-        dLoupeFacet = await hre.viem.getContractAt("DiamondLoupeFacet", diamond);
+        const dCutFacet = await viem.getContractAt("DiamondCutFacet", diamond);
+        dLoupeFacet = await viem.getContractAt("DiamondLoupeFacet", diamond);
         
-        test1Facet = await hre.viem.deployContract("Test1Facet");
+        test1Facet = await viem.deployContract("Test1Facet");
         const add = await publicClient.simulateContract({
             address: diamond,
             abi: dCutFacet.abi,
@@ -86,7 +89,7 @@ describe('Cache bug test', async () => {
     });
 
     it('should not exhibit the cache bug', async () => {
-        const publicClient = await hre.viem.getPublicClient();
+        const publicClient = await viem.getPublicClient();
         let selectors = await publicClient.readContract({
             address: dLoupeFacet.address,
             abi: dLoupeFacet.abi,
@@ -97,18 +100,18 @@ describe('Cache bug test', async () => {
         }) as `0x${string}`[];
     
         // Check individual correctness
-        assert.isTrue(selectors.includes(sel0), 'Does not contain sel0')
-        assert.isTrue(selectors.includes(sel1), 'Does not contain sel1')
-        assert.isTrue(selectors.includes(sel2), 'Does not contain sel2')
-        assert.isTrue(selectors.includes(sel3), 'Does not contain sel3')
-        assert.isTrue(selectors.includes(sel4), 'Does not contain sel4')
-        assert.isTrue(selectors.includes(sel6), 'Does not contain sel6')
-        assert.isTrue(selectors.includes(sel7), 'Does not contain sel7')
-        assert.isTrue(selectors.includes(sel8), 'Does not contain sel8')
-        assert.isTrue(selectors.includes(sel9), 'Does not contain sel9')
+        assert(selectors.includes(sel0), 'Does not contain sel0')
+        assert(selectors.includes(sel1), 'Does not contain sel1')
+        assert(selectors.includes(sel2), 'Does not contain sel2')
+        assert(selectors.includes(sel3), 'Does not contain sel3')
+        assert(selectors.includes(sel4), 'Does not contain sel4')
+        assert(selectors.includes(sel6), 'Does not contain sel6')
+        assert(selectors.includes(sel7), 'Does not contain sel7')
+        assert(selectors.includes(sel8), 'Does not contain sel8')
+        assert(selectors.includes(sel9), 'Does not contain sel9')
     
-        assert.isFalse(selectors.includes(ownerSel), 'Contains ownerSel')
-        assert.isFalse(selectors.includes(sel10), 'Contains sel10')
-        assert.isFalse(selectors.includes(sel5), 'Contains sel5')
+        assert(!selectors.includes(ownerSel), 'Contains ownerSel')
+        assert(!selectors.includes(sel10), 'Contains sel10')
+        assert(!selectors.includes(sel5), 'Contains sel5')
       });
 });
