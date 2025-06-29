@@ -45,7 +45,7 @@ This repository provides a production-ready implementation of the EIP-2535 Diamo
 
 - **EIP-2535 Compliant**: Full implementation of the Diamond Standard
 - **Loupe Functions**: All four standard loupe functions included
-- **Ownership Management**: Built-in ownership facet following ERC-173
+- **Role-Based Access Control**: Advanced permission system with multiple roles
 - **TypeScript Support**: Full type safety for scripts and tests
 - **Gas Efficient**: Optimized storage patterns and function selectors
 - **Flexible Upgrades**: Add, replace, or remove functions in a single transaction
@@ -71,12 +71,12 @@ This repository provides a production-ready implementation of the EIP-2535 Diamo
         ┌──────────────────┼──────────────────┐
         ▼                  ▼                  ▼
 ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│ DiamondCut   │  │ DiamondLoupe │  │  Ownership   │
+│ DiamondCut   │  │ DiamondLoupe │  │    Roles     │
 │    Facet     │  │    Facet     │  │    Facet     │
 └──────────────┘  └──────────────┘  └──────────────┘
                            │
                   ┌────────┴────────┐
-                  ▼                ▼
+                  ▼                 ▼
           ┌──────────────┐ ┌──────────────┐
           │ Custom Facet │ │ Custom Facet │
           │      #1      │ │      #2      │
@@ -129,12 +129,13 @@ erc2535-hardhat/
 │   ├── 📁 facets/                  # Facet implementations
 │   │   ├── DiamondCutFacet.sol     # Diamond upgrade functions facet
 │   │   ├── DiamondLoupeFacet.sol   # Introspection functions facet
-│   │   ├── OwnershipFacet.sol      # Ownership management facet
+│   │   ├── RoleFacet.sol           # Role-based access control facet
 │   │   ├── Test1Facet.sol          # Test1 facet
 │   │   └── Test2Facet.sol          # Test2 facet
 │   ├── 📁 interfaces/              # Contract interfaces
 │   ├── 📁 libraries/               # Shared libraries
-│   │   └── LibDiamond.sol          # Diamond storage and helpers
+│   │   ├── LibDiamond.sol          # Diamond storage and helpers
+│   │   └── LibAccessControl.sol    # Role-based access control storage
 │   └── 📁 upgradeInitializers/     # Initialization contracts
 │
 ├── 📁 scripts/                     # Deployment and utilities
@@ -161,7 +162,7 @@ The deployment script (`scripts/deploy.ts`) follows these steps:
 1. **Deploy DiamondCutFacet** - Provides the `diamondCut` function for upgrades
 2. **Deploy Diamond** - Creates the main proxy with owner and DiamondCutFacet
 3. **Deploy DiamondInit** - Initialization contract for setting initial state
-4. **Deploy Facets** - Deploy all additional facets (Loupe, Ownership, etc.)
+4. **Deploy Facets** - Deploy all additional facets (Loupe, Roles, etc.)
 5. **Cut Diamond** - Add all facet functions to the diamond in one transaction
 
 ### Working with Facets
@@ -230,7 +231,7 @@ bunx hardhat test test/diamond.test.ts
 - ✅ Facet addition/replacement/removal
 - ✅ Function selector management
 - ✅ Loupe function queries
-- ✅ Ownership transfers
+- ✅ Role-based access control
 - ✅ Initialization patterns
 - ✅ Edge cases and error handling
 
@@ -343,7 +344,7 @@ library LibAppStorage {
 
 ### Security Considerations
 
-- 🔐 **Access Control**: Implement proper access control for `diamondCut`
+- 🔐 **Access Control**: Role-based system protects critical functions
 - 🛡️ **Facet Validation**: Verify facet addresses before adding
 - ⚠️ **Selector Clashes**: Ensure no function selector conflicts
 - 🔍 **Audit Trail**: Log all diamond upgrades for transparency

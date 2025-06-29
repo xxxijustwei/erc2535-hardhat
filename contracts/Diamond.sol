@@ -9,11 +9,12 @@ pragma solidity ^0.8.28;
 /******************************************************************************/
 
 import {LibDiamond} from "./libraries/LibDiamond.sol";
+import {LibAccessControl} from "./libraries/LibAccessControl.sol";
 import {IDiamondCut} from "./interfaces/IDiamondCut.sol";
 
 contract Diamond {
     constructor(address _contractOwner, address _diamondCutFacet) payable {
-        LibDiamond.setContractOwner(_contractOwner);
+        LibAccessControl.grantOwner(_contractOwner);
 
         // Add the diamondCut external function from the diamondCutFacet
         IDiamondCut.FacetCut[] memory cut = new IDiamondCut.FacetCut[](1);

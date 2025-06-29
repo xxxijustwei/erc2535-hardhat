@@ -11,7 +11,7 @@ pragma solidity ^0.8.28;
 import {LibDiamond} from "../libraries/LibDiamond.sol";
 import {IDiamondLoupe} from "../interfaces/IDiamondLoupe.sol";
 import {IDiamondCut} from "../interfaces/IDiamondCut.sol";
-import {IERC173} from "../interfaces/IERC173.sol";
+import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
 import {IERC165} from "../interfaces/IERC165.sol";
 
 // It is expected that this contract is customized if you want to deploy your diamond
@@ -27,7 +27,7 @@ contract DiamondInit {
         ds.supportedInterfaces[type(IERC165).interfaceId] = true;
         ds.supportedInterfaces[type(IDiamondCut).interfaceId] = true;
         ds.supportedInterfaces[type(IDiamondLoupe).interfaceId] = true;
-        ds.supportedInterfaces[type(IERC173).interfaceId] = true;
+        ds.supportedInterfaces[type(IAccessControl).interfaceId] = true;
 
         // add your own state variables
         // EIP-2535 specifies that the `diamondCut` function takes two optional
