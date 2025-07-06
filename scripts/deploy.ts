@@ -17,7 +17,7 @@ export const depolyDiamond = async (viem: NetworkConnection<"generic">["viem"]) 
 
   const diamondInit = await viem.deployContract("DiamondInit");
 
-  const facetNames = ["DiamondLoupeFacet", "OwnershipFacet"];
+  const facetNames = ["DiamondLoupeFacet", "RolesFacet"];
   const cut = [];
 
   for (const facetName of facetNames) {

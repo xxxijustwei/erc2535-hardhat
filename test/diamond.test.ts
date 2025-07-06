@@ -23,7 +23,7 @@ describe("Diamond Test", async () => {
   let diamondAddress: `0x${string}`;
   let dCutFacet: GetContractReturnType<Abi>;
   let dLoupeFacet: GetContractReturnType<Abi>;
-  let ownershipFacet: GetContractReturnType<Abi>;
+  let rolesFacet: GetContractReturnType<Abi>;
 
   const addresses: `0x${string}`[] = [];
 
@@ -49,7 +49,7 @@ describe("Diamond Test", async () => {
     diamondAddress = await depolyDiamond(viem);
     dCutFacet = await viem.getContractAt("DiamondCutFacet", diamondAddress);
     dLoupeFacet = await viem.getContractAt("DiamondLoupeFacet", diamondAddress);
-    ownershipFacet = await viem.getContractAt("OwnershipFacet", diamondAddress);
+    rolesFacet = await viem.getContractAt("RolesFacet", diamondAddress);
   });
 
   it("should have three facets -- call to facetAddresses function", async () => {
@@ -66,7 +66,7 @@ describe("Diamond Test", async () => {
   it("facets should have the right function selectors -- call to facetFunctionSelectors function", async () => {
     const cutSelectors = getSelectors(dCutFacet);
     const loupeSelectors = getSelectors(dLoupeFacet);
-    const ownershipSelectors = getSelectors(ownershipFacet);
+    const rolesSelectors = getSelectors(rolesFacet);
 
     assert.deepStrictEqual(
       cutSelectors.filter((item: any) => typeof item === "string"),
@@ -77,7 +77,7 @@ describe("Diamond Test", async () => {
       await getFacetFunctionSelectors(addresses[1])
     );
     assert.deepStrictEqual(
-      ownershipSelectors.filter((item: any) => typeof item === "string"),
+      rolesSelectors.filter((item: any) => typeof item === "string"),
       await getFacetFunctionSelectors(addresses[2])
     );
   });
@@ -97,7 +97,7 @@ describe("Diamond Test", async () => {
     );
     assert.strictEqual(
       addresses[2],
-      await getSelectorFacetAddress("0xf2fde38b")
+      await getSelectorFacetAddress("0x2f2ff15d")
     );
   });
 
@@ -341,7 +341,7 @@ describe("Diamond Test", async () => {
       {
         facetAddress: addresses[2],
         action: FacetCutAction.Add,
-        functionSelectors: getSelectors(ownershipFacet),
+        functionSelectors: getSelectors(rolesFacet),
       },
       {
         facetAddress: addresses[3],
@@ -400,7 +400,7 @@ describe("Diamond Test", async () => {
     );
     assert.deepStrictEqual(
       facets[2].functionSelectors.sort(),
-      getSelectors(ownershipFacet)
+      getSelectors(rolesFacet)
         .filter((item: any) => typeof item === "string")
         .sort()
     );

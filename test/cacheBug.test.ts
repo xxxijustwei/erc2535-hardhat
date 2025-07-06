@@ -10,7 +10,7 @@ describe("Cache bug test", async () => {
 
   let dLoupeFacet: GetContractReturnType<Abi>;
   let test1Facet: GetContractReturnType<Abi>;
-  const ownerSel = "0x8da5cb5b";
+  const roleSel = "0x91d14854"; // hasRole selector
 
   const sel0 = "0x19e3b533"; // fills up slot 1
   const sel1 = "0x0716c2ae"; // fills up slot 1
@@ -66,7 +66,7 @@ describe("Cache bug test", async () => {
     const tx = await walletClient.writeContract(add.request);
     await publicClient.waitForTransactionReceipt({ hash: tx });
 
-    selectors = [ownerSel, sel5, sel10];
+    selectors = [roleSel, sel5, sel10];
 
     const remove = await publicClient.simulateContract({
       address: diamond,
@@ -108,7 +108,7 @@ describe("Cache bug test", async () => {
     assert(selectors.includes(sel8), "Does not contain sel8");
     assert(selectors.includes(sel9), "Does not contain sel9");
 
-    assert(!selectors.includes(ownerSel), "Contains ownerSel");
+    assert(!selectors.includes(roleSel), "Contains roleSel");
     assert(!selectors.includes(sel10), "Contains sel10");
     assert(!selectors.includes(sel5), "Contains sel5");
   });
