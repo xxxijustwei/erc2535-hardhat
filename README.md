@@ -144,7 +144,8 @@ erc2535-hardhat/
 │
 ├── 📁 test/                        # Test suite
 │   ├── cacheBug.test.ts            # Cache bug tests
-│   └── diamond.test.ts             # Comprehensive tests
+│   ├── diamond.test.ts             # Comprehensive tests
+│   └── rbac.test.ts                # Role-based access control tests
 │
 ├── ⚙️ hardhat.config.ts            # Hardhat configuration
 ├── 📦 package.json                 # Dependencies
