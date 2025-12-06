@@ -1,27 +1,36 @@
 {
-  "name": "erc2535-diamond-hardhat",
-  "version": "1.0.0",
-  "description": "EIP-2535 Diamond Standard Implementation",
-  "author": [
-    "Nick Mudge",
-    "xxxijustwei"
-  ],
-  "scripts": {
-    "build": "bun run clean && bun run compile",
-    "clean": "hardhat clean",
-    "compile": "hardhat compile",
-    "test": "hardhat test"
-  },
-  "devDependencies": {
-    "@nomicfoundation/hardhat-ignition": "3.0.6",
-    "@nomicfoundation/hardhat-toolbox-viem": "5.0.1",
-    "@openzeppelin/contracts": "5.4.0",
-    "@solidstate/contracts": "1.0.0-next.2",
-    "@types/node": "^22.15.34",
-    "forge-std": "github:foundry-rs/forge-std#v1.9.4",
-    "hardhat": "3.0.17",
-    "typescript": "~5.8.0",
-    "viem": "2.41.2"
-  },
-  "type": "module"
+	"name": "erc2535-diamond-hardhat",
+	"version": "1.0.0",
+	"description": "EIP-2535 Diamond Standard Implementation",
+	"type": "module",
+	"author": [
+		"Nick Mudge",
+		"xxxijustwei"
+	],
+	"scripts": {
+		"build": "npm run clean && npm run compile",
+		"clean": "hardhat clean",
+		"compile": "hardhat compile",
+		"test": "hardhat test",
+		"format": "biome format --write --no-errors-on-unmatched",
+		"lint": "biome lint --write --no-errors-on-unmatched",
+		"prepare": "husky"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.3.8",
+		"@nomicfoundation/hardhat-ignition": "3.0.6",
+		"@nomicfoundation/hardhat-toolbox-viem": "5.0.1",
+		"@openzeppelin/contracts": "5.4.0",
+		"@solidstate/contracts": "1.0.0-next.2",
+		"@types/node": "^22.15.34",
+		"forge-std": "github:foundry-rs/forge-std#v1.9.4",
+		"hardhat": "3.0.17",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.2.7",
+		"typescript": "~5.8.0",
+		"viem": "2.41.2"
+	},
+	"lint-staged": {
+		"**/*.{js,ts,jsx,tsx,json,jsonc}": "biome check --write --no-errors-on-unmatched"
+	}
 }
