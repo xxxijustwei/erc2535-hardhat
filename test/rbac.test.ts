@@ -1,5 +1,5 @@
 import { network } from "hardhat";
-import { depolyDiamond } from "../scripts/deploy.js";
+import { depolyDiamond } from "../scripts/utils/deploy-diamond.js";
 import {
   Abi,
   GetContractReturnType,

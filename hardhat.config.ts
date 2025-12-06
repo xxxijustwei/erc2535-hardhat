@@ -20,15 +20,19 @@ const config: HardhatUserConfig = {
       },
     },
   },
-  defaultNetwork: "hardhatMainnet",
   networks: {
+    local: {
+      type: "http",
+      chainType: "l1",
+      url: "http://127.0.0.1:8545",
+    },
     hardhatMainnet: {
-      type: "edr",
+      type: "edr-simulated",
       chainType: "l1",
     },
     hardhatOp: {
-      type: "edr",
-      chainType: "optimism",
+      type: "edr-simulated",
+      chainType: "op",
     },
     ethereum: {
       type: "http",
@@ -46,8 +50,8 @@ const config: HardhatUserConfig = {
   verify: {
     etherscan: {
       apiKey: configVariable("ETHERSCAN_API_KEY"),
-    }
-  }
+    },
+  },
 };
 
 export default config;

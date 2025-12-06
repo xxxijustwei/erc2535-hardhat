@@ -2,8 +2,8 @@
 pragma solidity ^0.8.28;
 
 import {EnumerableSet} from "@solidstate/contracts/data/EnumerableSet.sol";
-import {AddressUtils} from "@solidstate/contracts/utils/AddressUtils.sol";
-import {UintUtils} from "@solidstate/contracts/utils/UintUtils.sol";
+import {Address} from "@solidstate/contracts/utils/Address.sol";
+import {Uint256} from "@solidstate/contracts/utils/Uint256.sol";
 import "@openzeppelin/contracts/access/IAccessControl.sol";
 import {LibAccessControl} from "../libraries/LibAccessControl.sol";
 
@@ -12,9 +12,9 @@ import {LibAccessControl} from "../libraries/LibAccessControl.sol";
  * @dev derived from https://github.com/OpenZeppelin/openzeppelin-contracts (MIT license)
  */
 contract RolesFacet is IAccessControl {
-    using AddressUtils for address;
+    using Address for address;
     using EnumerableSet for EnumerableSet.AddressSet;
-    using UintUtils for uint256;
+    using Uint256 for uint256;
 
     modifier onlyRole(bytes32 role) {
         _checkRole(role);

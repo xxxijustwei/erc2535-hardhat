@@ -2,7 +2,7 @@ import { network } from "hardhat";
 import { Abi, GetContractReturnType, zeroAddress, zeroHash } from "viem";
 import assert from "node:assert/strict";
 import { before, describe, it } from "node:test";
-import { depolyDiamond } from "../scripts/deploy.js";
+import { depolyDiamond } from "../scripts/utils/deploy-diamond.js";
 import { FacetCutAction } from "../scripts/utils/diamond.js";
 
 describe("Cache bug test", async () => {

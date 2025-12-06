@@ -39,7 +39,7 @@ This repository provides a production-ready implementation of the EIP-2535 Diamo
 - **🔧 Modern Stack**: Built with Hardhat v3, Viem, and TypeScript
 - **📦 Modular Design**: Easy to add, replace, or remove functionality
 - **🛡️ Battle Tested**: Comprehensive test coverage for all diamond operations
-- **⚡ Fast Development**: Uses Bun package manager for blazing fast builds
+- **⚡ Fast Development**: Uses pnpm package manager for blazing fast builds
 
 ## ✨ Features
 
@@ -90,7 +90,7 @@ This repository provides a production-ready implementation of the EIP-2535 Diamo
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) >= 18.0.0
-- [Bun](https://bun.sh/) (recommended) or npm/yarn
+- [pnpm](https://pnpm.sh/) (recommended) or npm/yarn
 - Git
 
 ### Installation
@@ -100,21 +100,18 @@ This repository provides a production-ready implementation of the EIP-2535 Diamo
 git clone git@github.com:xxxijustwei/erc2535-hardhat.git
 cd erc2535-hardhat
 
-# Install dependencies with Bun (recommended)
-bun install
-
-# Or with npm
-npm install
+# Install dependencies
+pnpm install
 ```
 
 ### Deploy Your First Diamond
 
 ```bash
 # Deploy to local network
-bunx hardhat run scripts/deploy.ts
+npx hardhat run scripts/deploy.ts
 
 # Deploy to specific network
-bunx hardhat run scripts/deploy.ts --network sepolia
+npx hardhat run scripts/deploy.ts --network sepolia
 ``` 
 
 ---
@@ -217,13 +214,16 @@ Run the comprehensive test suite:
 
 ```bash
 # Run all tests
-bun test
+pnpm test
 
-# Run with coverage
-bunx hardhat coverage
+# Run all tests with coverage
+pnpm test --coverage
+
+# Run all tests with gas stats
+pnpm test --gas-stats
 
 # Run specific test file
-bunx hardhat test test/diamond.test.ts
+pnpm test test/diamond.test.ts
 ```
 
 ### Test Coverage
