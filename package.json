@@ -24,7 +24,7 @@
 		"@solidstate/contracts": "1.0.0-next.2",
 		"@types/node": "^22.15.34",
 		"forge-std": "github:foundry-rs/forge-std#v1.9.4",
-		"hardhat": "3.0.17",
+		"hardhat": "3.1.0",
 		"husky": "^9.1.7",
 		"lint-staged": "^16.2.7",
 		"typescript": "~5.8.0",
