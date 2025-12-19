@@ -104,16 +104,6 @@ cd erc2535-hardhat
 pnpm install
 ```
 
-### Deploy Your First Diamond
-
-```bash
-# Deploy to local network
-npx hardhat run scripts/deploy.ts
-
-# Deploy to specific network
-npx hardhat run scripts/deploy.ts --network sepolia
-``` 
-
 ---
 
 ## 📁 Project Structure
@@ -127,25 +117,34 @@ erc2535-hardhat/
 │   │   ├── DiamondCutFacet.sol     # Diamond upgrade functions facet
 │   │   ├── DiamondLoupeFacet.sol   # Introspection functions facet
 │   │   ├── RoleFacet.sol           # Role-based access control facet
-│   │   ├── Test1Facet.sol          # Test1 facet
-│   │   └── Test2Facet.sol          # Test2 facet
+│   │   ├── Test1Facet.sol          # Test1 facet (for testing)
+│   │   └── Test2Facet.sol          # Test2 facet (for testing)
 │   ├── 📁 interfaces/              # Contract interfaces
+│   │   ├── IDiamondCut.sol         # Diamond cut interface
+│   │   ├── IDiamondLoupe.sol       # Diamond loupe interface
+│   │   └── IERC165.sol             # ERC165 interface
 │   ├── 📁 libraries/               # Shared libraries
 │   │   ├── LibDiamond.sol          # Diamond storage and helpers
 │   │   └── LibAccessControl.sol    # Role-based access control storage
 │   └── 📁 upgradeInitializers/     # Initialization contracts
+│       └── DiamondInit.sol         # Diamond initialization logic
 │
-├── 📁 scripts/                     # Deployment and utilities
-│   ├── deploy.ts                   # Main deployment script
-│   └── 📁 utils/                   # Helper functions
+├── 📁 ignition/                    # Hardhat Ignition deployment
+│   └── 📁 modules/
+│       └── diamond.ts              # Diamond deployment module
+│
+├── 📁 scripts/                     # Deployment scripts and utilities
+│   ├── deploy.ts                   # Programmatic deployment script
+│   └── utils.ts                    # Helper functions (selectors, etc.)
 │
 ├── 📁 test/                        # Test suite
 │   ├── cacheBug.test.ts            # Cache bug tests
-│   ├── diamond.test.ts             # Comprehensive tests
+│   ├── diamond.test.ts             # Comprehensive diamond tests
 │   └── rbac.test.ts                # Role-based access control tests
 │
 ├── ⚙️ hardhat.config.ts            # Hardhat configuration
 ├── 📦 package.json                 # Dependencies
+├── 📝 biome.json                   # Biome linter configuration
 └── 📝 README.md                    # This file
 ```
 
@@ -155,13 +154,37 @@ erc2535-hardhat/
 
 ### Deployment Process
 
-The deployment script (`scripts/deploy.ts`) follows these steps:
+This project supports two deployment methods:
+
+#### Method 1: Hardhat Ignition (Recommended)
+
+Use `ignition/modules/diamond.ts` for declarative, reproducible deployments:
+
+```bash
+# Deploy to local network
+npx hardhat ignition deploy ignition/modules/diamond.ts
+
+# Deploy to specific network
+npx hardhat ignition deploy ignition/modules/diamond.ts --network <network-name>
+```
+
+#### Method 2: Programmatic Script
+
+Use `scripts/deploy.ts` for more control over the deployment process:
+
+```bash
+npx hardhat run scripts/deploy.ts --network <network-name>
+```
+
+#### Deployment Steps
+
+Both methods follow the same deployment flow:
 
 1. **Deploy DiamondCutFacet** - Provides the `diamondCut` function for upgrades
-2. **Deploy Diamond** - Creates the main proxy with owner and DiamondCutFacet
+2. **Deploy Diamond** - Creates the main proxy with owner and DiamondCutFacet address
 3. **Deploy DiamondInit** - Initialization contract for setting initial state
-4. **Deploy Facets** - Deploy all additional facets (Loupe, Roles, etc.)
-5. **Cut Diamond** - Add all facet functions to the diamond in one transaction
+4. **Deploy Facets** - Deploy additional facets (DiamondLoupeFacet, RoleFacet, etc.)
+5. **Execute diamondCut** - Add all facet functions to the diamond and call init function in one transaction
 
 ### Working with Facets
 
@@ -172,19 +195,19 @@ The deployment script (`scripts/deploy.ts`) follows these steps:
 contract MyFacet {
     // Using diamond storage pattern
     bytes32 constant STORAGE_POSITION = keccak256("my.facet.storage");
-    
+
     struct MyStorage {
         uint256 value;
         mapping(address => bool) users;
     }
-    
+
     function getStorage() internal pure returns (MyStorage storage ms) {
         bytes32 position = STORAGE_POSITION;
         assembly {
             ms.slot := position
         }
     }
-    
+
     function setValue(uint256 _value) external {
         MyStorage storage ms = getStorage();
         ms.value = _value;
@@ -327,13 +350,13 @@ The Diamond Storage pattern allows facets to share storage without conflicts:
 ```solidity
 library LibAppStorage {
     bytes32 constant STORAGE_POSITION = keccak256("app.storage");
-    
+
     struct AppStorage {
         uint256 totalSupply;
         mapping(address => uint256) balances;
         address admin;
     }
-    
+
     function appStorage() internal pure returns (AppStorage storage ds) {
         bytes32 position = STORAGE_POSITION;
         assembly {
@@ -374,16 +397,19 @@ We welcome contributions! Please follow these steps:
 ## 📚 Resources
 
 ### Official Documentation
+
 - 📖 [EIP-2535: Diamonds, Multi-Facet Proxy](https://eips.ethereum.org/EIPS/eip-2535)
 - 🌐 [Diamond Standard Reference](https://github.com/mudgen/diamond)
 
 ### Tutorials & Articles
+
 - 📝 [Introduction to the Diamond Standard](https://eip2535diamonds.substack.com/p/introduction-to-the-diamond-standard)
 - 🎓 [Understanding Diamonds on Ethereum](https://dev.to/mudgen/understanding-diamonds-on-ethereum-1fb)
 - 🔧 [Solidity Storage Layout For Proxy Contracts](https://medium.com/1milliondevs/solidity-storage-layout-for-proxy-contracts-and-diamonds-c4f009b6903)
 - 💡 [Upgradeable Smart Contracts Guide](https://hiddentao.com/archives/2020/05/28/upgradeable-smart-contracts-using-diamond-standard)
 
 ### Community & Support
+
 - 💬 [EIP-2535 Diamonds Discord](https://discord.gg/kQewPw2)
 - 🐦 [Follow Nick Mudge on Twitter](https://twitter.com/mudgen)
 - 📧 [Email Support](mailto:nick@perfectabstractions.com)
@@ -392,8 +418,8 @@ We welcome contributions! Please follow these steps:
 
 ## 👥 Authors
 
-- **Nick Mudge** - *Original Implementation* - [@mudgen](https://github.com/mudgen)
-- **xxxijustwei** - *Hardhat v3 Migration* - [@xxxijustwei](https://github.com/xxxijustwei)
+- **Nick Mudge** - _Original Implementation_ - [@mudgen](https://github.com/mudgen)
+- **xxxijustwei** - _Hardhat v3 Migration_ - [@xxxijustwei](https://github.com/xxxijustwei)
 
 ---
 
