@@ -7,11 +7,13 @@ import {
 	zeroAddress,
 	zeroHash,
 } from "viem";
-import { depolyDiamond } from "../scripts/utils/deploy-diamond.js";
-import { FacetCutAction } from "../scripts/utils/diamond.js";
+import DiamondModule from "@/ignition/modules/diamond.js";
+import { FacetCutAction } from "../scripts/utils.js";
 
 describe("Cache bug test", async () => {
-	const { viem } = await network.connect();
+	const { viem, ignition } = await network.connect();
+	const publicClient = await viem.getPublicClient();
+	const [walletClient] = await viem.getWalletClients();
 
 	let dLoupeFacet: GetContractReturnType<Abi>;
 	let test1Facet: GetContractReturnType<Abi>;
@@ -44,11 +46,9 @@ describe("Cache bug test", async () => {
 			sel10,
 		];
 
-		const publicClient = await viem.getPublicClient();
-		const [walletClient] = await viem.getWalletClients();
-
-		const diamond = await depolyDiamond(viem);
-		const dCutFacet = await viem.getContractAt("DiamondCutFacet", diamond);
+		const deployed = await ignition.deploy(DiamondModule);
+		const diamond = deployed.diamond.address;
+		const dCutFacet = deployed.dimaondCutFacet;
 		dLoupeFacet = await viem.getContractAt("DiamondLoupeFacet", diamond);
 
 		test1Facet = await viem.deployContract("Test1Facet");

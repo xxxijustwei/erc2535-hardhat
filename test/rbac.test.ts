@@ -12,18 +12,18 @@ import {
 	zeroAddress,
 	zeroHash,
 } from "viem";
-import { depolyDiamond } from "../scripts/utils/deploy-diamond.js";
-import { FacetCutAction, getSelectors } from "../scripts/utils/diamond.js";
+import DiamondModule from "@/ignition/modules/diamond.js";
+import { FacetCutAction, getSelectors } from "../scripts/utils.js";
 
 describe("RBAC (Role-Based Access Control) Test", async () => {
-	const { viem } = await network.connect();
+	const { viem, ignition } = await network.connect();
 	const publicClient = await viem.getPublicClient();
 	const [walletClient, otherWallet, thirdWallet] =
 		await viem.getWalletClients();
 
 	let diamondAddress: `0x${string}`;
 	let dCutFacet: GetContractReturnType<Abi>;
-	let rolesFacet: GetContractReturnType<Abi>;
+	let roleFacet: GetContractReturnType<Abi>;
 
 	// Role constants
 	const ROLE_OWNER =
@@ -33,15 +33,16 @@ describe("RBAC (Role-Based Access Control) Test", async () => {
 	const CUSTOM_ROLE = keccak256(toBytes("CUSTOM_ROLE"));
 
 	before(async () => {
-		diamondAddress = await depolyDiamond(viem);
+		const { diamond } = await ignition.deploy(DiamondModule);
+		diamondAddress = diamond.address;
 		dCutFacet = await viem.getContractAt("DiamondCutFacet", diamondAddress);
-		rolesFacet = await viem.getContractAt("RolesFacet", diamondAddress);
+		roleFacet = await viem.getContractAt("RoleFacet", diamondAddress);
 	});
 
 	it("should grant owner role to deployer", async () => {
 		const hasRole = await publicClient.readContract({
 			address: diamondAddress,
-			abi: rolesFacet.abi,
+			abi: roleFacet.abi,
 			functionName: "hasRole",
 			args: [ROLE_OWNER, walletClient.account.address],
 		});
@@ -52,7 +53,7 @@ describe("RBAC (Role-Based Access Control) Test", async () => {
 	it("owner should be able to grant manager role", async () => {
 		const { request } = await publicClient.simulateContract({
 			address: diamondAddress,
-			abi: rolesFacet.abi,
+			abi: roleFacet.abi,
 			functionName: "grantRole",
 			args: [ROLE_MANAGER, otherWallet.account.address],
 		});
@@ -61,7 +62,7 @@ describe("RBAC (Role-Based Access Control) Test", async () => {
 
 		const hasRole = await publicClient.readContract({
 			address: diamondAddress,
-			abi: rolesFacet.abi,
+			abi: roleFacet.abi,
 			functionName: "hasRole",
 			args: [ROLE_MANAGER, otherWallet.account.address],
 		});
@@ -72,7 +73,7 @@ describe("RBAC (Role-Based Access Control) Test", async () => {
 	it("should get role admin", async () => {
 		const roleAdmin = await publicClient.readContract({
 			address: diamondAddress,
-			abi: rolesFacet.abi,
+			abi: roleFacet.abi,
 			functionName: "getRoleAdmin",
 			args: [ROLE_MANAGER],
 		});
@@ -88,7 +89,7 @@ describe("RBAC (Role-Based Access Control) Test", async () => {
 		try {
 			await publicClient.simulateContract({
 				address: diamondAddress,
-				abi: rolesFacet.abi,
+				abi: roleFacet.abi,
 				functionName: "grantRole",
 				args: [ROLE_MANAGER, thirdWallet.account.address],
 				account: otherWallet.account.address,
@@ -105,7 +106,7 @@ describe("RBAC (Role-Based Access Control) Test", async () => {
 	it("should be able to revoke roles", async () => {
 		const { request } = await publicClient.simulateContract({
 			address: diamondAddress,
-			abi: rolesFacet.abi,
+			abi: roleFacet.abi,
 			functionName: "revokeRole",
 			args: [ROLE_MANAGER, otherWallet.account.address],
 		});
@@ -114,7 +115,7 @@ describe("RBAC (Role-Based Access Control) Test", async () => {
 
 		const hasRole = await publicClient.readContract({
 			address: diamondAddress,
-			abi: rolesFacet.abi,
+			abi: roleFacet.abi,
 			functionName: "hasRole",
 			args: [ROLE_MANAGER, otherWallet.account.address],
 		});
@@ -130,7 +131,7 @@ describe("RBAC (Role-Based Access Control) Test", async () => {
 		// First grant the role
 		const grantReq = await publicClient.simulateContract({
 			address: diamondAddress,
-			abi: rolesFacet.abi,
+			abi: roleFacet.abi,
 			functionName: "grantRole",
 			args: [CUSTOM_ROLE, otherWallet.account.address],
 		});
@@ -139,7 +140,7 @@ describe("RBAC (Role-Based Access Control) Test", async () => {
 		// Then renounce it
 		const { request } = await publicClient.simulateContract({
 			address: diamondAddress,
-			abi: rolesFacet.abi,
+			abi: roleFacet.abi,
 			functionName: "renounceRole",
 			args: [CUSTOM_ROLE, otherWallet.account.address],
 			account: otherWallet.account.address,
@@ -149,7 +150,7 @@ describe("RBAC (Role-Based Access Control) Test", async () => {
 
 		const hasRole = await publicClient.readContract({
 			address: diamondAddress,
-			abi: rolesFacet.abi,
+			abi: roleFacet.abi,
 			functionName: "hasRole",
 			args: [CUSTOM_ROLE, otherWallet.account.address],
 		});
@@ -161,7 +162,7 @@ describe("RBAC (Role-Based Access Control) Test", async () => {
 		// Grant role first
 		const grantReq = await publicClient.simulateContract({
 			address: diamondAddress,
-			abi: rolesFacet.abi,
+			abi: roleFacet.abi,
 			functionName: "grantRole",
 			args: [CUSTOM_ROLE, thirdWallet.account.address],
 		});
@@ -171,7 +172,7 @@ describe("RBAC (Role-Based Access Control) Test", async () => {
 		try {
 			await publicClient.simulateContract({
 				address: diamondAddress,
-				abi: rolesFacet.abi,
+				abi: roleFacet.abi,
 				functionName: "renounceRole",
 				args: [CUSTOM_ROLE, thirdWallet.account.address],
 				account: otherWallet.account.address,
@@ -282,7 +283,7 @@ describe("RBAC (Role-Based Access Control) Test", async () => {
 
 		const { request } = await publicClient.simulateContract({
 			address: diamondAddress,
-			abi: rolesFacet.abi,
+			abi: roleFacet.abi,
 			functionName: "grantRole",
 			args: [testRole, thirdWallet.account.address],
 		});

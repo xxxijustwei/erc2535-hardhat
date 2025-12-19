@@ -10,22 +10,22 @@ import {
 	zeroAddress,
 	zeroHash,
 } from "viem";
-import { depolyDiamond } from "../scripts/utils/deploy-diamond.js";
+import DiamondModule from "@/ignition/modules/diamond.js";
 import {
 	FacetCutAction,
 	getSelectors,
 	removeSelectors,
-} from "../scripts/utils/diamond.js";
+} from "../scripts/utils.js";
 
 describe("Diamond Test", async () => {
-	const { viem } = await network.connect();
+	const { viem, ignition } = await network.connect();
 	const publicClient = await viem.getPublicClient();
 	const [walletClient] = await viem.getWalletClients();
 
 	let diamondAddress: `0x${string}`;
 	let dCutFacet: GetContractReturnType<Abi>;
 	let dLoupeFacet: GetContractReturnType<Abi>;
-	let rolesFacet: GetContractReturnType<Abi>;
+	let roleFacet: GetContractReturnType<Abi>;
 
 	const addresses: `0x${string}`[] = [];
 
@@ -48,10 +48,11 @@ describe("Diamond Test", async () => {
 	};
 
 	before(async () => {
-		diamondAddress = await depolyDiamond(viem);
+		const { diamond } = await ignition.deploy(DiamondModule);
+		diamondAddress = diamond.address;
 		dCutFacet = await viem.getContractAt("DiamondCutFacet", diamondAddress);
 		dLoupeFacet = await viem.getContractAt("DiamondLoupeFacet", diamondAddress);
-		rolesFacet = await viem.getContractAt("RolesFacet", diamondAddress);
+		roleFacet = await viem.getContractAt("RoleFacet", diamondAddress);
 	});
 
 	it("should have three facets -- call to facetAddresses function", async () => {
@@ -68,7 +69,7 @@ describe("Diamond Test", async () => {
 	it("facets should have the right function selectors -- call to facetFunctionSelectors function", async () => {
 		const cutSelectors = getSelectors(dCutFacet);
 		const loupeSelectors = getSelectors(dLoupeFacet);
-		const rolesSelectors = getSelectors(rolesFacet);
+		const roleSelectors = getSelectors(roleFacet);
 
 		assert.deepStrictEqual(
 			cutSelectors.filter((item: any) => typeof item === "string"),
@@ -79,7 +80,7 @@ describe("Diamond Test", async () => {
 			await getFacetFunctionSelectors(addresses[1]),
 		);
 		assert.deepStrictEqual(
-			rolesSelectors.filter((item: any) => typeof item === "string"),
+			roleSelectors.filter((item: any) => typeof item === "string"),
 			await getFacetFunctionSelectors(addresses[2]),
 		);
 	});
@@ -343,7 +344,7 @@ describe("Diamond Test", async () => {
 			{
 				facetAddress: addresses[2],
 				action: FacetCutAction.Add,
-				functionSelectors: getSelectors(rolesFacet),
+				functionSelectors: getSelectors(roleFacet),
 			},
 			{
 				facetAddress: addresses[3],
@@ -402,7 +403,7 @@ describe("Diamond Test", async () => {
 		);
 		assert.deepStrictEqual(
 			facets[2].functionSelectors.sort(),
-			getSelectors(rolesFacet)
+			getSelectors(roleFacet)
 				.filter((item: any) => typeof item === "string")
 				.sort(),
 		);

@@ -1,4 +1,6 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: ignore */
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { type GetContractReturnType, toFunctionSignature } from "viem";
 import { toFunctionSelector } from "viem/utils";
 
@@ -19,6 +21,27 @@ export const getSelectors = (contract: GetContractReturnType<any>) => {
 
 	selectors.remove = remove;
 	selectors.get = get;
+	return selectors;
+};
+
+export const getSelectorsByName = (facetName: string) => {
+	const artifactPath = join(
+		process.cwd(),
+		"artifacts",
+		"contracts",
+		"facets",
+		`${facetName}.sol`,
+		`${facetName}.json`,
+	);
+	const artifact = JSON.parse(readFileSync(artifactPath, "utf-8"));
+	const { abi } = artifact;
+	const selectors = abi
+		.filter((abi: any) => abi.type === "function")
+		.filter((abi: any) => toFunctionSignature(abi) !== "init(bytes)")
+		.reduce((acc: any, abi: any) => {
+			acc.push(toFunctionSelector(abi));
+			return acc;
+		}, []);
 	return selectors;
 };
 

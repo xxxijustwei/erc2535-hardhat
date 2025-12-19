@@ -11,7 +11,7 @@ import {LibAccessControl} from "../libraries/LibAccessControl.sol";
  * @title Role-based access control system
  * @dev derived from https://github.com/OpenZeppelin/openzeppelin-contracts (MIT license)
  */
-contract RolesFacet is IAccessControl {
+contract RoleFacet is IAccessControl {
     using Address for address;
     using EnumerableSet for EnumerableSet.AddressSet;
     using Uint256 for uint256;
