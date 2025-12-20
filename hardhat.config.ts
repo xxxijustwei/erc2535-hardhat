@@ -1,3 +1,4 @@
+import hardhatIgnitionPlugin from "@nomicfoundation/hardhat-ignition";
 import hardhatNetworkHelpers from "@nomicfoundation/hardhat-network-helpers";
 import hardhatNodeTestRunner from "@nomicfoundation/hardhat-node-test-runner";
 import hardhatToolboxViemPlugin from "@nomicfoundation/hardhat-toolbox-viem";
@@ -5,7 +6,6 @@ import hardhatViem from "@nomicfoundation/hardhat-viem";
 import hardhatViemAssertions from "@nomicfoundation/hardhat-viem-assertions";
 import type { HardhatUserConfig } from "hardhat/config";
 import { configVariable } from "hardhat/config";
-import "@nomicfoundation/hardhat-ignition";
 
 const config: HardhatUserConfig = {
 	plugins: [
@@ -14,6 +14,7 @@ const config: HardhatUserConfig = {
 		hardhatViemAssertions,
 		hardhatNodeTestRunner,
 		hardhatNetworkHelpers,
+		hardhatIgnitionPlugin,
 	],
 	solidity: {
 		profiles: {
